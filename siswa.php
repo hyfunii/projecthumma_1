@@ -14,6 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $sql = "INSERT INTO siswa (nisn, nama, tgl_lahir, alamat, ortu) VALUES ('$nisn', '$nama', '$tgl_lahir', '$alamat', '$ortu')";
         $db->query($sql);
+        
+        // Redirect to avoid form resubmission
+        header('Location: siswa.php');
+        exit;
     } elseif ($action == 'edit') {
         $id_siswa = $_POST['id_siswa'];
         $nama = $_POST['nama'];
@@ -23,11 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $sql = "UPDATE siswa SET nama='$nama', tgl_lahir='$tgl_lahir', alamat='$alamat', ortu='$ortu' WHERE id_siswa='$id_siswa'";
         $db->query($sql);
+        
+        // Redirect to avoid form resubmission
+        header('Location: siswa.php');
+        exit;
     } elseif ($action == 'delete') {
         $id_siswa = $_POST['id_siswa'];
 
         $sql = "DELETE FROM siswa WHERE id_siswa='$id_siswa'";
         $db->query($sql);
+        
+        // Redirect to avoid form resubmission
+        header('Location: siswa.php');
+        exit;
     }
 }
 ?>
