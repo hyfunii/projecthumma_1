@@ -122,10 +122,10 @@ $result = $db->query($show_rel_data);
                     $nisn = $data_show['nisn'];
                     echo "<tr>";
                     echo "<td>" . $numb++ . "</td>";
-                    echo "<td>" . htmlspecialchars($data_show['nisn']) . "</td>";
-                    echo "<td>" . htmlspecialchars($data_show['Nama']) . "</td>";
-                    echo "<td>" . htmlspecialchars($data_show['Jalur_Pendaftaran']) . "</td>";
-                    echo "<td>" . htmlspecialchars($data_show['Pilihan']) . "</td>";
+                    echo "<td>" . ($data_show['nisn']) . "</td>";
+                    echo "<td>" . ($data_show['Nama']) . "</td>";
+                    echo "<td>" . ($data_show['Jalur_Pendaftaran']) . "</td>";
+                    echo "<td>" . ($data_show['Pilihan']) . "</td>";
                     echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#detailModal' data-id='$nisn'>Detail</button></td>";
                     echo "</tr>";
                 }
@@ -205,4 +205,5 @@ $result = $db->query($show_rel_data);
         });
     </script>
 </body>
+
 </html>

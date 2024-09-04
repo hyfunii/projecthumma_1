@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <th>Tanggal Lahir</th>
                     <th>Alamat</th>
                     <th>Ortu</th>
-                    <th>Aksi</th>(
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <td>" . $numb++ . "</td>
                         <td>{$row['nisn']}</td>
                         <td>{$row['nama']}</td>
-                        <td>{$row['tgl_lahir']}</td>
+                            <td>{$row['tgl_lahir']}</td>
                         <td>{$row['alamat']}</td>
                         <td>{$row['ortu']}</td>
                         <td>
@@ -80,13 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <button class='btn btn-danger btn-sm' onclick='deleteSiswa({$row['id_siswa']})'>Hapus</button>
                         </td>
                       </tr>";
-                }
-                ?>
+                } ?>
             </tbody>
         </table>
     </div>
 
-    <!-- Modal Tambah -->
     <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -129,7 +127,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 
-    <!-- Modal Edit -->
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -177,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         $('#editModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
