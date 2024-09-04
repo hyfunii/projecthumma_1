@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($exists) {
         echo "<script>
-            alert('NISN sudah ada di salah satu tabel!');
+            alert('Siswa sudah terdaftar!');
             window.location.href = 'index.php';
         </script>";
         $db->close();
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-    <div class="container">
+    <div class="container mt-4 md-4">
         <h2>Data Pendaftaran Jalur Afirmasi</h2>
         <form action="j_afirmasi.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
@@ -105,13 +105,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             var nisn = this.value;
             if (nisn) {
                 fetch('get_nama.php?nisn=' + encodeURIComponent(nisn))
-                    .then(response => response.text())
+                    .then(response => response.json())
                     .then(data => {
-                        document.getElementById('nama').value = data;
+                        if (data.status === 'success') {
+                            document.getElementById('nama').value = data.nama;
+                            fetch('get_nilai.php?nisn=' + encodeURIComponent(nisn))
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        document.getElementById('nilai_rata').value = data.nilai_rata;
+                                        checkCriteria(data.nilai_rata);
+                                    } else {
+                                        document.getElementById('nilai_rata').value = '';
+                                        document.getElementById('criteria-warning').textContent = data.message;
+                                        toggleSubmitButton(false);
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        } else {
+                            document.getElementById('nama').value = '';
+                            document.getElementById('nilai_rata').value = '';
+                            document.getElementById('criteria-warning').textContent = data.message;
+                            toggleSubmitButton(false);
+                        }
                     })
                     .catch(error => console.error('Error:', error));
             } else {
                 document.getElementById('nama').value = '';
+                document.getElementById('nilai_rata').value = '';
+                document.getElementById('criteria-warning').textContent = '';
+                toggleSubmitButton(false);
             }
         });
     </script>

@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($exists) {
         echo "<script>
-            alert('NISN sudah ada di salah satu tabel!');
+            alert('Siswa sudah terdaftar!');
             window.location.href = 'index.php';
         </script>";
         $db->close();

@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($exists) {
         echo "<script>
-            alert('NISN sudah ada di salah satu tabel!');
+            alert('Siswa sudah terdaftar!');
             window.location.href = 'index.php';
         </script>";
         $db->close();
@@ -99,9 +99,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="KKBT">KKBT</option>
                 </select>
             </div>
-            <div id="map"></div>
+            <div id="map" class="form-group"></div>
             <button type="submit" class="btn btn-primary">Submit</button>
             <a href="index.php" class="btn btn-secondary">Cancel</a>
+            <div class="form-group"></div>
         </form>
     </div>
 
@@ -165,13 +166,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             var nisn = this.value;
             if (nisn) {
                 fetch('get_nama.php?nisn=' + encodeURIComponent(nisn))
-                    .then(response => response.text())
+                    .then(response => response.json())
                     .then(data => {
-                        document.getElementById('nama').value = data;
+                        if (data.status === 'success') {
+                            document.getElementById('nama').value = data.nama;
+                            fetch('get_nilai.php?nisn=' + encodeURIComponent(nisn))
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        document.getElementById('nilai_rata').value = data.nilai_rata;
+                                        checkCriteria(data.nilai_rata);
+                                    } else {
+                                        document.getElementById('nilai_rata').value = '';
+                                        document.getElementById('criteria-warning').textContent = data.message;
+                                        toggleSubmitButton(false);
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        } else {
+                            document.getElementById('nama').value = '';
+                            document.getElementById('nilai_rata').value = '';
+                            document.getElementById('criteria-warning').textContent = data.message;
+                            toggleSubmitButton(false);
+                        }
                     })
                     .catch(error => console.error('Error:', error));
             } else {
                 document.getElementById('nama').value = '';
+                document.getElementById('nilai_rata').value = '';
+                document.getElementById('criteria-warning').textContent = '';
+                toggleSubmitButton(false);
             }
         });
 
