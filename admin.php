@@ -1,16 +1,18 @@
 <?php
 include 'debeh.php';
+
 if (isset($_GET['action']) && $_GET['action'] === 'get_details') {
     $nisn = $_GET['nisn'];
     $sql = "
         SELECT
             s.nisn,
             s.nama AS Nama,
-            CASE
-                WHEN a.nisn IS NOT NULL THEN 'Jalur Afirmasi'
-                WHEN z.nisn IS NOT NULL THEN 'Jalur Zonasi'
-                WHEN n.nisn IS NOT NULL THEN 'Jalur Nilai Akademik'
-            END AS Jalur_Pendaftaran,
+            COALESCE(
+                CASE WHEN a.nisn IS NOT NULL THEN 'Jalur Afirmasi'
+                     WHEN z.nisn IS NOT NULL THEN 'Jalur Zonasi'
+                     WHEN n.nisn IS NOT NULL THEN 'Jalur Nilai Akademik'
+                END, 'Tidak Diketahui'
+            ) AS Jalur_Pendaftaran,
             COALESCE(a.pilihan, z.pilihan, n.pilihan) AS Pilihan,
             a.doc AS Doc,
             n.nilai_rata AS Rata_Rata_Nilai,
@@ -23,11 +25,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_details') {
     ";
 
     $stmt = $db->prepare($sql);
-    $stmt->bind_param("i", $nisn);
+    $stmt->bind_param("s", $nisn);
     $stmt->execute();
-    $result = $stmt->get_result();
-
-    $data = $result->fetch_assoc();
+    $data = $stmt->get_result()->fetch_assoc();
 
     header('Content-Type: application/json');
     echo json_encode($data);
@@ -37,30 +37,29 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_details') {
     exit;
 }
 
-$orderBy = isset($_GET['sort']) ? $_GET['sort'] : 's.nisn';
-$orderDir = isset($_GET['dir']) && $_GET['dir'] === 'desc' ? 'DESC' : 'ASC';
+$orderBy = $_GET['sort'] ?? 's.nisn';
+$orderDir = $_GET['dir'] === 'desc' ? 'DESC' : 'ASC';
 
-$show_rel_data = "
+$query = "
     SELECT
         s.nisn,
         s.nama AS Nama,
-        CASE
-            WHEN a.nisn IS NOT NULL THEN 'Jalur Afirmasi'
-            WHEN z.nisn IS NOT NULL THEN 'Jalur Zonasi'
-            WHEN n.nisn IS NOT NULL THEN 'Jalur Nilai Akademik'
-        END AS Jalur_Pendaftaran,
+        COALESCE(
+            CASE WHEN a.nisn IS NOT NULL THEN 'Jalur Afirmasi'
+                 WHEN z.nisn IS NOT NULL THEN 'Jalur Zonasi'
+                 WHEN n.nisn IS NOT NULL THEN 'Jalur Nilai Akademik'
+            END, 'Tidak Diketahui'
+        ) AS Jalur_Pendaftaran,
         COALESCE(a.pilihan, z.pilihan, n.pilihan) AS Pilihan
     FROM siswa s
     LEFT JOIN j_afirmasi a ON s.nisn = a.nisn
     LEFT JOIN j_zonasi z ON s.nisn = z.nisn
     LEFT JOIN j_nilai_akademik n ON s.nisn = n.nisn
-    WHERE a.nisn IS NOT NULL
-       OR z.nisn IS NOT NULL
-       OR n.nisn IS NOT NULL
+    WHERE a.nisn IS NOT NULL OR z.nisn IS NOT NULL OR n.nisn IS NOT NULL
     ORDER BY $orderBy $orderDir
 ";
 
-$result = $db->query($show_rel_data);
+$result = $db->query($query);
 ?>
 
 <!DOCTYPE html>
@@ -74,30 +73,19 @@ $result = $db->query($show_rel_data);
     <style>
         .sortable {
             cursor: pointer;
-            position: relative;
         }
-
         .sortable::after {
-            content: ' ';
+            content: '';
             position: absolute;
             right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            width: 0;
-            height: 0;
             border-left: 5px solid transparent;
             border-right: 5px solid transparent;
         }
-
-        .asc::after {
-            border-bottom: 5px solid #000;
-        }
-
-        .desc::after {
-            border-top: 5px solid #000;
-        }
+        .asc::after { border-bottom: 5px solid #000; }
+        .desc::after { border-top: 5px solid #000; }
     </style>
-
 </head>
 
 <body>
@@ -119,15 +107,15 @@ $result = $db->query($show_rel_data);
                 <?php
                 $numb = 1;
                 while ($data_show = $result->fetch_assoc()) {
-                    $nisn = $data_show['nisn'];
-                    echo "<tr>";
-                    echo "<td>" . $numb++ . "</td>";
-                    echo "<td>" . ($data_show['nisn']) . "</td>";
-                    echo "<td>" . ($data_show['Nama']) . "</td>";
-                    echo "<td>" . ($data_show['Jalur_Pendaftaran']) . "</td>";
-                    echo "<td>" . ($data_show['Pilihan']) . "</td>";
-                    echo "<td><button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#detailModal' data-id='$nisn'>Detail</button></td>";
-                    echo "</tr>";
+                    echo "<tr>
+                        <td>{$numb}</td>
+                        <td>{$data_show['nisn']}</td>
+                        <td>{$data_show['Nama']}</td>
+                        <td>{$data_show['Jalur_Pendaftaran']}</td>
+                        <td>{$data_show['Pilihan']}</td>
+                        <td><button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#detailModal' data-id='{$data_show['nisn']}'>Detail</button></td>
+                    </tr>";
+                    $numb++;
                 }
                 ?>
             </tbody>
@@ -141,17 +129,14 @@ $result = $db->query($show_rel_data);
                     <h5 class="modal-title" id="detailModalLabel">Detail Siswa</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div id="modalContent">
-                    </div>
-                </div>
+                <div class="modal-body" id="modalContent"></div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const currentSort = urlParams.get('sort');
             const currentDir = urlParams.get('dir') || 'asc';
@@ -163,47 +148,32 @@ $result = $db->query($show_rel_data);
                 } else {
                     th.classList.remove('asc', 'desc');
                 }
-            });
-
-            document.querySelectorAll('th[data-sort]').forEach(th => {
-                th.addEventListener('click', function () {
-                    const sortBy = this.getAttribute('data-sort');
-                    const currentUrl = new URL(window.location.href);
-                    const newDir = (currentUrl.searchParams.get('sort') === sortBy && currentUrl.searchParams.get('dir') === 'asc') ? 'desc' : 'asc';
-
-                    currentUrl.searchParams.set('sort', sortBy);
-                    currentUrl.searchParams.set('dir', newDir);
-                    window.location.href = currentUrl.toString();
+                th.addEventListener('click', () => {
+                    const newDir = (currentSort === sortKey && currentDir === 'asc') ? 'desc' : 'asc';
+                    urlParams.set('sort', sortKey);
+                    urlParams.set('dir', newDir);
+                    window.location.search = urlParams.toString();
                 });
             });
 
-            var detailModal = document.getElementById('detailModal');
-            detailModal.addEventListener('show.bs.modal', function (event) {
-                var button = event.relatedTarget;
-                var nisn = button.getAttribute('data-id');
-
-                fetch('?action=get_details&nisn=' + nisn)
+            document.getElementById('detailModal').addEventListener('show.bs.modal', event => {
+                const nisn = event.relatedTarget.getAttribute('data-id');
+                fetch(`?action=get_details&nisn=${nisn}`)
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data);
-                        var modalContent = document.getElementById('modalContent');
-                        var content = '<p><strong>NISN:</strong> ' + data.nisn + '</p>' +
-                            '<p><strong>Nama:</strong> ' + data.Nama + '</p>' +
-                            '<p><strong>Pilihan:</strong> ' + data.Pilihan + '</p>' +
-                            '<p><strong>Jalur:</strong> ' + data.Jalur_Pendaftaran + '</p>';
-                        if (data.Doc !== undefined && data.Doc !== null) {
-                            content += '<p><strong>Doc:</strong> ' + data.Doc + '</p>';
-                        } else if (data.Rata_Rata_Nilai !== undefined && data.Rata_Rata_Nilai !== null) {
-                            content += '<p><strong>Rata Rata Nilai:</strong> ' + data.Rata_Rata_Nilai + '</p>';
-                        } else if (data.Jarak_Kesekolah !== undefined && data.Jarak_Kesekolah !== null) {
-                            content += '<p><strong>Jarak Kesekolah:</strong> ' + data.Jarak_Kesekolah + '</p>';
-                        }
-                        modalContent.innerHTML = content;
+                        document.getElementById('modalContent').innerHTML = `
+                            <p><strong>NISN:</strong> ${data.nisn}</p>
+                            <p><strong>Nama:</strong> ${data.Nama}</p>
+                            <p><strong>Jalur:</strong> ${data.Jalur_Pendaftaran}</p>
+                            <p><strong>Pilihan:</strong> ${data.Pilihan}</p>
+                            ${data.Doc ? `<p><strong>Doc:</strong> ${data.Doc}</p>` : ''}
+                            ${data.Rata_Rata_Nilai ? `<p><strong>Rata Rata Nilai:</strong> ${data.Rata_Rata_Nilai}</p>` : ''}
+                            ${data.Jarak_Kesekolah ? `<p><strong>Jarak Kesekolah:</strong> ${data.Jarak_Kesekolah}</p>` : ''}
+                        `;
                     })
-                    .catch(error => console.error('Error fetching data:', error));
+                    .catch(error => console.error('Error:', error));
             });
         });
     </script>
 </body>
-
 </html>
