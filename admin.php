@@ -74,6 +74,7 @@ $result = $db->query($query);
         .sortable {
             cursor: pointer;
         }
+
         .sortable::after {
             content: '';
             position: absolute;
@@ -83,15 +84,24 @@ $result = $db->query($query);
             border-left: 5px solid transparent;
             border-right: 5px solid transparent;
         }
-        .asc::after { border-bottom: 5px solid #000; }
-        .desc::after { border-top: 5px solid #000; }
+
+        .asc::after {
+            border-bottom: 5px solid #000;
+        }
+
+        .desc::after {
+            border-top: 5px solid #000;
+        }
     </style>
 </head>
 
 <body>
     <?php include 'navbar.php'; ?>
     <div class="container mt-5">
-        <h2 class="mb-4">DATA PENDAFTARAN</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Data Pendaftaran</h2>
+            <a href="hasil.php" class="btn btn-primary">Lihat Hasil Seleksi</a>
+        </div>
         <table class="table table-striped table-bordered">
             <thead class="table-light">
                 <tr>
@@ -108,13 +118,17 @@ $result = $db->query($query);
                 $numb = 1;
                 while ($data_show = $result->fetch_assoc()) {
                     echo "<tr>
-                        <td>{$numb}</td>
-                        <td>{$data_show['nisn']}</td>
-                        <td>{$data_show['Nama']}</td>
-                        <td>{$data_show['Jalur_Pendaftaran']}</td>
-                        <td>{$data_show['Pilihan']}</td>
-                        <td><button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#detailModal' data-id='{$data_show['nisn']}'>Detail</button></td>
-                    </tr>";
+            <td>{$numb}</td>
+            <td>{$data_show['nisn']}</td>
+            <td>{$data_show['Nama']}</td>
+            <td>{$data_show['Jalur_Pendaftaran']}</td>
+            <td>{$data_show['Pilihan']}</td>
+            <td>
+                <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#detailModal' data-id='{$data_show['nisn']}'>Detail</button>
+                <button class='btn btn-success btn-lolos' data-id='{$data_show['nisn']}'>Lolos</button>
+                <button class='btn btn-danger btn-tolak' data-id='{$data_show['nisn']}'>Tolak</button>
+            </td>
+        </tr>";
                     $numb++;
                 }
                 ?>
@@ -130,6 +144,8 @@ $result = $db->query($query);
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="modalContent"></div>
+                <div class="modal-footer">
+                </div>
             </div>
         </div>
     </div>
@@ -141,13 +157,10 @@ $result = $db->query($query);
             const currentSort = urlParams.get('sort');
             const currentDir = urlParams.get('dir') || 'asc';
 
+            // Sortable Table Header Click
             document.querySelectorAll('th[data-sort]').forEach(th => {
                 const sortKey = th.getAttribute('data-sort');
-                if (sortKey === currentSort) {
-                    th.classList.add(currentDir);
-                } else {
-                    th.classList.remove('asc', 'desc');
-                }
+                th.classList.toggle(currentDir, sortKey === currentSort);
                 th.addEventListener('click', () => {
                     const newDir = (currentSort === sortKey && currentDir === 'asc') ? 'desc' : 'asc';
                     urlParams.set('sort', sortKey);
@@ -156,24 +169,75 @@ $result = $db->query($query);
                 });
             });
 
-            document.getElementById('detailModal').addEventListener('show.bs.modal', event => {
+            // Modal Event Listener
+            const detailModal = document.getElementById('detailModal');
+            detailModal.addEventListener('show.bs.modal', event => {
                 const nisn = event.relatedTarget.getAttribute('data-id');
                 fetch(`?action=get_details&nisn=${nisn}`)
                     .then(response => response.json())
                     .then(data => {
                         document.getElementById('modalContent').innerHTML = `
-                            <p><strong>NISN:</strong> ${data.nisn}</p>
-                            <p><strong>Nama:</strong> ${data.Nama}</p>
-                            <p><strong>Jalur:</strong> ${data.Jalur_Pendaftaran}</p>
-                            <p><strong>Pilihan:</strong> ${data.Pilihan}</p>
-                            ${data.Doc ? `<p><strong>Doc:</strong> ${data.Doc}</p>` : ''}
-                            ${data.Rata_Rata_Nilai ? `<p><strong>Rata Rata Nilai:</strong> ${data.Rata_Rata_Nilai}</p>` : ''}
-                            ${data.Jarak_Kesekolah ? `<p><strong>Jarak Kesekolah:</strong> ${data.Jarak_Kesekolah}</p>` : ''}
-                        `;
+                        <p><strong>NISN:</strong> ${data.nisn}</p>
+                        <p><strong>Nama:</strong> ${data.Nama}</p>
+                        <p><strong>Jalur:</strong> ${data.Jalur_Pendaftaran}</p>
+                        <p><strong>Pilihan:</strong> ${data.Pilihan}</p>
+                        ${data.Doc ? `<p><strong>Doc:</strong> ${data.Doc}</p>` : ''}
+                        ${data.Rata_Rata_Nilai ? `<p><strong>Rata Rata Nilai:</strong> ${data.Rata_Rata_Nilai}</p>` : ''}
+                        ${data.Jarak_Kesekolah ? `<p><strong>Jarak Kesekolah:</strong> ${data.Jarak_Kesekolah}</p>` : ''}
+                        <button class="btn btn-success btn-action" data-action="lolos" data-id="${data.nisn}">Lolos</button>
+                        <button class="btn btn-danger btn-action" data-action="tolak" data-id="${data.nisn}">Tolak</button>
+                    `;
                     })
                     .catch(error => console.error('Error:', error));
             });
+
+            // Handling 'Lolos' and 'Tolak' button clicks in the modal
+            document.addEventListener('click', event => {
+                if (event.target.classList.contains('btn-action')) {
+                    const action = event.target.getAttribute('data-action');
+                    const nisn = event.target.getAttribute('data-id');
+                    console.log(`Sending request: action=${action}, nisn=${nisn}`); // Debugging
+                    fetch(`handle_action.php?action=${action}&nisn=${nisn}`, {
+                        method: 'GET'
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Data berhasil diproses.');
+                                window.location.reload(); // Reload the page to reflect changes
+                            } else {
+                                alert(`Terjadi kesalahan: ${data.error}`);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            });
+
+            // Handling 'Lolos' and 'Tolak' button clicks in the table
+            document.querySelectorAll('.btn-lolos, .btn-tolak').forEach(button => {
+                button.addEventListener('click', () => {
+                    const nisn = button.getAttribute('data-id');
+                    const action = button.classList.contains('btn-lolos') ? 'lolos' : 'tolak';
+                    console.log(`Sending request: action=${action}, nisn=${nisn}`); // Debugging
+                    fetch(`handle_action.php?action=${action}&nisn=${nisn}`, {
+                        method: 'GET'
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Data berhasil diproses.');
+                                window.location.reload(); // Reload the page to reflect changes
+                            } else {
+                                alert(`Terjadi kesalahan: ${data.error}`);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
         });
     </script>
+
+
 </body>
+
 </html>

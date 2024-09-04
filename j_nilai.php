@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             alert('Anda tidak memiliki kriteria yang cukup untuk masuk ke jurusan ini!');
         </script>";
     } else {
+        // Insert data into j_nilai_akademik
         $stmt = $db->prepare("INSERT INTO j_nilai_akademik (nisn, nilai_rata, pilihan) VALUES (?, ?, ?)");
         if ($stmt === false) {
             die('Error: Gagal mempersiapkan statement.');
@@ -55,6 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("sss", $nisn, $nilai_rata, $pilihan);
 
         if ($stmt->execute()) {
+            // Add to pendaftaran table
+            $stmt = $db->prepare("INSERT INTO pendaftaran (nisn) VALUES (?)");
+            $stmt->bind_param("s", $nisn);
+            $stmt->execute();
+
             echo "<script>
                 alert('Data berhasil disimpan!');
                 window.location.href = 'index.php';
@@ -71,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db->close();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

@@ -38,6 +38,9 @@
                             <li><a class="dropdown-item" href="j_nilai.php">Nilai Akademik</a></li>
                         </ul>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="hasil.php">Lihat Hasil Seleksi</a>
+                    </li>
                 </ul>
             </div>
         </div>

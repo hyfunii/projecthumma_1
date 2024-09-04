@@ -33,10 +33,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Insert data into j_zonasi
     $stmt = $db->prepare("INSERT INTO j_zonasi (nisn, jarak, pilihan) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $nisn, $jarak, $pilihan);
 
     if ($stmt->execute()) {
+        // Add to pendaftaran table
+        $stmt = $db->prepare("INSERT INTO pendaftaran (nisn) VALUES (?)");
+        $stmt->bind_param("s", $nisn);
+        $stmt->execute();
+
         echo "<script>
             alert('Data berhasil disimpan!');
             window.location.href = 'index.php';
@@ -51,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db->close();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
