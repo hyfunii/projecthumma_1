@@ -15,6 +15,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_details') {
             ) AS Jalur_Pendaftaran,
             COALESCE(a.pilihan, z.pilihan, n.pilihan) AS Pilihan,
             a.doc AS Doc,
+            CONCAT('../afirmasidoc/', a.doc) AS DocURL,
             n.nilai_rata AS Rata_Rata_Nilai,
             z.jarak AS Jarak_Kesekolah
         FROM siswa s
@@ -62,6 +63,7 @@ $query = "
 $result = $db->query($query);
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -92,7 +94,8 @@ $result = $db->query($query);
         .desc::after {
             border-top: 5px solid #000;
         }
-        .container{
+
+        .container {
             padding-top: 2rem;
         }
     </style>
@@ -140,7 +143,7 @@ $result = $db->query($query);
     </div>
 
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="detailModalLabel">Detail Siswa</h5>
@@ -153,6 +156,7 @@ $result = $db->query($query);
         </div>
     </div>
 
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
@@ -162,7 +166,7 @@ $result = $db->query($query);
             const currentSort = urlParams.get('sort');
             const currentDir = urlParams.get('dir') || 'asc';
 
-            // Sortable Table Header Click
+            
             document.querySelectorAll('th[data-sort]').forEach(th => {
                 const sortKey = th.getAttribute('data-sort');
                 th.classList.toggle(currentDir, sortKey === currentSort);
@@ -174,34 +178,52 @@ $result = $db->query($query);
                 });
             });
 
-            // Modal Event Listener
+            
             const detailModal = document.getElementById('detailModal');
             detailModal.addEventListener('show.bs.modal', event => {
                 const nisn = event.relatedTarget.getAttribute('data-id');
                 fetch(`?action=get_details&nisn=${nisn}`)
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById('modalContent').innerHTML = `
-                        <p><strong>NISN:</strong> ${data.nisn}</p>
-                        <p><strong>Nama:</strong> ${data.Nama}</p>
-                        <p><strong>Jalur:</strong> ${data.Jalur_Pendaftaran}</p>
-                        <p><strong>Pilihan:</strong> ${data.Pilihan}</p>
-                        ${data.Doc ? `<p><strong>Doc:</strong> ${data.Doc}</p>` : ''}
-                        ${data.Rata_Rata_Nilai ? `<p><strong>Rata Rata Nilai:</strong> ${data.Rata_Rata_Nilai}</p>` : ''}
-                        ${data.Jarak_Kesekolah ? `<p><strong>Jarak Kesekolah:</strong> ${data.Jarak_Kesekolah}</p>` : ''}
-                        <button class="btn btn-success btn-action" data-action="lolos" data-id="${data.nisn}">Lolos</button>
-                        <button class="btn btn-danger btn-action" data-action="tolak" data-id="${data.nisn}">Tolak</button>
+                        let docContent = '';
+                        if (data.DocURL) {
+                            docContent = `
+                        <p><strong>Doc:</strong> 
+                            <a href="${data.DocURL}" target="_blank" class="btn btn-info btn-sm">View</a>
+                            <button class="btn btn-secondary btn-sm" id="fullscreenBtn" data-img-url="${data.DocURL}">Fullscreen</button>
+                            <a href="${data.DocURL}" download class="btn btn-primary btn-sm">Download</a>
+                        </p>
+                        <img src="${data.DocURL}" alt="Document" style="max-width: 100%; height: auto; display: block;">
                     `;
+                        }
+                        document.getElementById('modalContent').innerHTML = `
+                    <p><strong>NISN:</strong> ${data.nisn}</p>
+                    <p><strong>Nama:</strong> ${data.Nama}</p>
+                    <p><strong>Jalur:</strong> ${data.Jalur_Pendaftaran}</p>
+                    <p><strong>Pilihan:</strong> ${data.Pilihan}</p>
+                    ${docContent}
+                    ${data.Rata_Rata_Nilai ? `<p><strong>Rata Rata Nilai:</strong> ${data.Rata_Rata_Nilai}</p>` : ''}
+                    ${data.Jarak_Kesekolah ? `<p><strong>Jarak Kesekolah:</strong> ${data.Jarak_Kesekolah}</p>` : ''}
+                    <br>
+                    <button class="btn btn-success btn-action" data-action="lolos" data-id="${data.nisn}">Lolos</button>
+                    <button class="btn btn-danger btn-action" data-action="tolak" data-id="${data.nisn}">Tolak</button>
+                `;
                     })
                     .catch(error => console.error('Error:', error));
             });
 
-            // Handling 'Lolos' and 'Tolak' button clicks in the modal
+            
             document.addEventListener('click', event => {
+                if (event.target.id === 'fullscreenBtn') {
+                    const imgUrl = event.target.getAttribute('data-img-url');
+                    const imgWindow = window.open(imgUrl, '_blank');
+                    imgWindow.focus();
+                }
+
                 if (event.target.classList.contains('btn-action')) {
                     const action = event.target.getAttribute('data-action');
                     const nisn = event.target.getAttribute('data-id');
-                    console.log(`Sending request: action=${action}, nisn=${nisn}`); // Debugging
+                    console.log(`Sending request: action=${action}, nisn=${nisn}`); 
                     fetch(`../function/handle_action.php?action=${action}&nisn=${nisn}`, {
                         method: 'GET'
                     })
@@ -209,7 +231,7 @@ $result = $db->query($query);
                         .then(data => {
                             if (data.success) {
                                 alert('Data berhasil diproses.');
-                                window.location.reload(); // Reload the page to reflect changes
+                                window.location.reload(); 
                             } else {
                                 alert(`Terjadi kesalahan: ${data.error}`);
                             }
@@ -218,12 +240,12 @@ $result = $db->query($query);
                 }
             });
 
-            // Handling 'Lolos' and 'Tolak' button clicks in the table
+            
             document.querySelectorAll('.btn-lolos, .btn-tolak').forEach(button => {
                 button.addEventListener('click', () => {
                     const nisn = button.getAttribute('data-id');
                     const action = button.classList.contains('btn-lolos') ? 'lolos' : 'tolak';
-                    console.log(`Sending request: action=${action}, nisn=${nisn}`); // Debugging
+                    console.log(`Sending request: action=${action}, nisn=${nisn}`); 
                     fetch(`../function/handle_action.php?action=${action}&nisn=${nisn}`, {
                         method: 'GET'
                     })
@@ -231,7 +253,7 @@ $result = $db->query($query);
                         .then(data => {
                             if (data.success) {
                                 alert('Data berhasil diproses.');
-                                window.location.reload(); // Reload the page to reflect changes
+                                window.location.reload(); 
                             } else {
                                 alert(`Terjadi kesalahan: ${data.error}`);
                             }
