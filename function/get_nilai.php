@@ -1,5 +1,5 @@
 <?php
-include 'debeh.php';
+include '../db/debeh.php';
 header('Content-Type: application/json');
 $nisn = $_GET['nisn'];
 $stmt = $db->prepare("SELECT nilai_rata FROM nilai WHERE nisn = ?");

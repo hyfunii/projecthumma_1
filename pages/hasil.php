@@ -1,5 +1,5 @@
 <?php
-include 'debeh.php'; // Pastikan ini menginisialisasi koneksi ke database
+include '../db/debeh.php'; // Pastikan ini menginisialisasi koneksi ke database
 
 // Ambil data dari tabel hasil dengan join ke tabel siswa
 $query = "
@@ -40,7 +40,7 @@ $db->close();
 </head>
 
 <body>
-    <?php include 'navbar.php'; ?>
+    <?php include '../navbar.php'; ?>
 
     <div class="container mt-4">
         <h1>Hasil Seleksi</h1>

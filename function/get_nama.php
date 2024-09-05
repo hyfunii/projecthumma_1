@@ -1,5 +1,5 @@
 <?php
-include 'debeh.php';
+include '../db/debeh.php';
 header('Content-Type: application/json'); // Tambahkan header ini
 $nisn = $_GET['nisn'];
 $result = $db->query("SELECT nama FROM siswa WHERE nisn='$nisn'");

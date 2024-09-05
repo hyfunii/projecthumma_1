@@ -1,5 +1,5 @@
 <?php
-include 'debeh.php'; // Pastikan ini menginisialisasi koneksi ke database
+include '../db/debeh.php'; // Pastikan ini menginisialisasi koneksi ke database
 
 header('Content-Type: application/json');
 

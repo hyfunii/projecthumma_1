@@ -1,5 +1,5 @@
 <?php
-include 'debeh.php';
+include '../db/debeh.php';
 
 if (isset($_GET['action']) && $_GET['action'] === 'get_details') {
     $nisn = $_GET['nisn'];
@@ -99,7 +99,7 @@ $result = $db->query($query);
 </head>
 
 <body>
-    <?php include 'navbar.php'; ?>
+    <?php include '../navbar.php'; ?>
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Data Pendaftaran</h2>
@@ -202,7 +202,7 @@ $result = $db->query($query);
                     const action = event.target.getAttribute('data-action');
                     const nisn = event.target.getAttribute('data-id');
                     console.log(`Sending request: action=${action}, nisn=${nisn}`); // Debugging
-                    fetch(`handle_action.php?action=${action}&nisn=${nisn}`, {
+                    fetch(`../function/handle_action.php?action=${action}&nisn=${nisn}`, {
                         method: 'GET'
                     })
                         .then(response => response.json())
@@ -224,7 +224,7 @@ $result = $db->query($query);
                     const nisn = button.getAttribute('data-id');
                     const action = button.classList.contains('btn-lolos') ? 'lolos' : 'tolak';
                     console.log(`Sending request: action=${action}, nisn=${nisn}`); // Debugging
-                    fetch(`handle_action.php?action=${action}&nisn=${nisn}`, {
+                    fetch(`../function/handle_action.php?action=${action}&nisn=${nisn}`, {
                         method: 'GET'
                     })
                         .then(response => response.json())

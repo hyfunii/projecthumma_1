@@ -1,5 +1,5 @@
 <?php
-include 'debeh.php';
+include '../db/debeh.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $action = $_POST['action'] ?? '';
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
-    <?php include 'navbar.php' ?>
+    <?php include '../navbar.php' ?>
     <div class="container mt-5">
         <div class="d-flex justify-content-between">
             <h2>DATA SISWA</h2>

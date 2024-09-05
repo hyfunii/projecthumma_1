@@ -1,6 +1,6 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    include 'debeh.php';
+    include '../db/debeh.php';
 
     $nisn = $_POST['nisn'];
     $nilai_rata = $_POST['nilai_rata'];
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($exists) {
         echo "<script>
             alert('Siswa sudah terdaftar!');
-            window.location.href = 'index.php';
+            window.location.href = '../index.php';
         </script>";
         $db->close();
         exit;
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             echo "<script>
                 alert('Data berhasil disimpan!');
-                window.location.href = 'index.php';
+                window.location.href = '../index.php';
             </script>";
         } else {
             echo "<script>
@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <small id="criteria-warning" class="form-text warning"></small>
             </div>
             <button type="submit" class="btn btn-primary" id="submit-btn">Submit</button>
-            <a href="index.php" class="btn btn-secondary">Cancel</a>
+            <a href="../index.php" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 
@@ -135,12 +135,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.getElementById('nisn').addEventListener('input', function () {
             var nisn = this.value;
             if (nisn) {
-                fetch('get_nama.php?nisn=' + encodeURIComponent(nisn))
+                fetch('../function/get_nama.php?nisn=' + encodeURIComponent(nisn))
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
                             document.getElementById('nama').value = data.nama;
-                            fetch('get_nilai.php?nisn=' + encodeURIComponent(nisn))
+                            fetch('../function/get_nilai.php?nisn=' + encodeURIComponent(nisn))
                                 .then(response => response.json())
                                 .then(data => {
                                     if (data.status === 'success') {

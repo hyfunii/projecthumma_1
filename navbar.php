@@ -22,10 +22,10 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="index.php">Home</a>
+                        <a class="nav-link" aria-current="page" href="../index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="siswa.php">Data siswa</a>
+                        <a class="nav-link" href="../pages/siswa.php">Data siswa</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -33,13 +33,13 @@
                             Jalur Pendaftaran
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="j_afirmasi.php">Afirmasi</a></li>
-                            <li><a class="dropdown-item" href="j_zonasi.php">Zonasi</a></li>
-                            <li><a class="dropdown-item" href="j_nilai.php">Nilai Akademik</a></li>
+                            <li><a class="dropdown-item" href="../pages/j_afirmasi.php">Afirmasi</a></li>
+                            <li><a class="dropdown-item" href="../pages/j_zonasi.php">Zonasi</a></li>
+                            <li><a class="dropdown-item" href="../pages/j_nilai.php">Nilai Akademik</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="hasil.php">Lihat Hasil Seleksi</a>
+                        <a class="nav-link" href="../pages/hasil.php">Lihat Hasil Seleksi</a>
                     </li>
                 </ul>
             </div>

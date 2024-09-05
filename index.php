@@ -88,7 +88,7 @@
     <section>
         <div class="home-section container">
             <div class="home-image">
-                <img src="5836.jpg" alt="Education Vector">
+                <img src="image/5836.jpg" alt="Education Vector">
             </div>
             <div class="home-text">
                 <h2>PPDB 2025</h2>
@@ -107,7 +107,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Jalur Afirmasi</h5>
                                 <p class="card-text">Jalur untuk calon siswa dari keluarga kurang mampu atau berkebutuhan khusus.</p>
-                                <a href="j_afirmasi.php" class="btn btn-primary">Daftar</a>
+                                <a href="pages/j_afirmasi.php" class="btn btn-primary">Daftar</a>
                             </div>
                         </div>
                     </div>
@@ -116,7 +116,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Jalur Zonasi</h5>
                                 <p class="card-text">Jalur penerimaan berdasarkan lokasi tempat tinggal calon siswa.</p>
-                                <a href="j_zonasi.php" class="btn btn-primary">Daftar</a>
+                                <a href="pages/j_zonasi.php" class="btn btn-primary">Daftar</a>
                             </div>
                         </div>
                     </div>
@@ -125,7 +125,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Jalur Nilai Akademik</h5>
                                 <p class="card-text">Jalur penerimaan berdasarkan prestasi akademik calon siswa.</p>
-                                <a href="j_nilai.php" class="btn btn-primary">Daftar</a>
+                                <a href="pages/j_nilai.php" class="btn btn-primary">Daftar</a>
                             </div>
                         </div>
                     </div>
