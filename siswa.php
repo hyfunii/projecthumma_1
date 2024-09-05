@@ -48,13 +48,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Siswa</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container{
+            padding-top: 2rem;
+        }
+    </style>
 </head>
 
 <body>
     <?php include 'navbar.php' ?>
     <div class="container mt-5">
         <div class="d-flex justify-content-between">
-        <h2>DATA SISWA</h2>
+            <h2>DATA SISWA</h2>
         <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addModal">Tambah Siswa</button>
         </div>
         <table class="table table-striped table-bordered">

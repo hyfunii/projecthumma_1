@@ -32,6 +32,11 @@ $db->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hasil Seleksi</title>
     <link rel="stylesheet" href="path/to/your/bootstrap.css"> <!-- Update path if needed -->
+    <style>
+        .container{
+            padding-top: 3rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -70,5 +75,6 @@ $db->close();
         </table>
     </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </html>
