@@ -61,6 +61,11 @@ $query = "
 ";
 
 $result = $db->query($query);
+
+$rows = [];
+while ($data_show = $result->fetch_assoc()) {
+    $rows[] = $data_show;
+}
 ?>
 
 <!DOCTYPE html>
@@ -101,16 +106,15 @@ $result = $db->query($query);
 </head>
 
 <body>
-    <?php include '../navbar.php'; ?>
+    <?php include '../navbaradmin.php'; ?>
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Data Pendaftaran</h2>
-            <a href="hasil.php" class="btn btn-primary">Lihat Hasil Seleksi</a>
         </div>
         <table class="table table-striped table-bordered">
             <thead class="table-light">
                 <tr>
-                    <th>No</th>
+                    <th>No.</th>
                     <th class="sortable" data-sort="nisn">NISN</th>
                     <th class="sortable" data-sort="nama">Nama</th>
                     <th class="sortable" data-sort="jalur_pendaftaran">Jalur Pendaftaran</th>
@@ -119,25 +123,32 @@ $result = $db->query($query);
                 </tr>
             </thead>
             <tbody>
-                <?php
-                $numb = 1;
-                while ($data_show = $result->fetch_assoc()) {
-                    echo "<tr>
-            <td>{$numb}</td>
-            <td>{$data_show['nisn']}</td>
-            <td>{$data_show['Nama']}</td>
-            <td>{$data_show['Jalur_Pendaftaran']}</td>
-            <td>{$data_show['Pilihan']}</td>
-            <td>
-                <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#detailModal' data-id='{$data_show['nisn']}'>Detail</button>
-                <button class='btn btn-success btn-lolos' data-id='{$data_show['nisn']}'>Lolos</button>
-                <button class='btn btn-danger btn-tolak' data-id='{$data_show['nisn']}'>Tolak</button>
-            </td>
-        </tr>";
-                    $numb++;
-                }
-                ?>
+                <?php if (empty($rows)): ?>
+                    <tr>
+                        <td colspan="6" class="text-center">Tidak ada data untuk ditampilkan.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php $numb = 1; ?>
+                    <?php foreach ($rows as $data_show): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($numb++); ?></td>
+                            <td><?php echo htmlspecialchars($data_show['nisn']); ?></td>
+                            <td><?php echo htmlspecialchars($data_show['Nama']); ?></td>
+                            <td><?php echo htmlspecialchars($data_show['Jalur_Pendaftaran']); ?></td>
+                            <td><?php echo htmlspecialchars($data_show['Pilihan']); ?></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal"
+                                    data-id="<?php echo htmlspecialchars($data_show['nisn']); ?>">Detail</button>
+                                <button class="btn btn-success btn-sm btn-lolos"
+                                    data-id="<?php echo htmlspecialchars($data_show['nisn']); ?>">Lolos</button>
+                                <button class="btn btn-danger btn-sm btn-tolak"
+                                    data-id="<?php echo htmlspecialchars($data_show['nisn']); ?>">Tolak</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
+
         </table>
     </div>
 

@@ -67,16 +67,11 @@ $db->close();
 </head>
 
 <body>
-    <?php include '../navbaradmin.php'; ?>
+    <?php include '../navbar.php'; ?>
 
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Hasil Pendaftaran</h2>
-            <div>
-                <form method="POST" style="display:inline;">
-                    <button type="submit" name="delete_all" class="btn btn-danger mb-3">Delete All</button>
-                </form>
-            </div>
         </div>
         <table class="table table-striped table-bordered">
             <thead class="table-light">
@@ -86,7 +81,6 @@ $db->close();
                     <th>Nama Siswa</th>
                     <th>Jurusan</th>
                     <th>Keterangan</th>
-                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -103,11 +97,6 @@ $db->close();
                             <td><?php echo htmlspecialchars($row['nama_siswa']); ?></td>
                             <td><?php echo htmlspecialchars($row['jurusan']); ?></td>
                             <td><?php echo htmlspecialchars($row['ket']); ?></td>
-                            <td>
-                                <a href="?action=delete&nisn=<?php echo htmlspecialchars($row['nisn']); ?>"
-                                    class="btn btn-danger btn-delete"
-                                    onclick="return confirm('Are you sure you want to delete this record?')">Delete</a>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>

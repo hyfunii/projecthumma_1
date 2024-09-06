@@ -47,25 +47,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Siswa</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .container {
             padding-top: 2rem;
+        }
+
+        .sortable {
+            cursor: pointer;
+        }
+
+        .sortable::after {
+            content: '';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
         }
     </style>
 </head>
 
 <body>
-    <?php include '../navbar.php' ?>
+    <?php include '../navbaradmin.php' ?>
     <div class="container mt-5">
-        <div class="d-flex justify-content-between">
-            <h2>DATA SISWA</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Data Siswa</h2>
             <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addModal">Tambah Siswa</button>
         </div>
         <table class="table table-striped table-bordered">
-            <thead>
+            <thead class="table-light">
                 <tr>
-                    <th>NO</th>
+                    <th>No.</th>
                     <th>NISN</th>
                     <th>Nama</th>
                     <th>Tanggal Lahir</th>
@@ -78,24 +92,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php
                 $numb = 1;
                 $result = $db->query("SELECT * FROM siswa");
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>
-                        <td>" . $numb++ . "</td>
-                        <td>{$row['nisn']}</td>
-                        <td>{$row['nama']}</td>
-                            <td>{$row['tgl_lahir']}</td>
-                        <td>{$row['alamat']}</td>
-                        <td>{$row['ortu']}</td>
-                        <td>
-                            <button class='btn btn-warning btn-sm' data-toggle='modal' data-target='#editModal'
-                                    data-id='{$row['id_siswa']}' data-nisn='{$row['nisn']}' data-nama='{$row['nama']}'
-                                    data-tgl_lahir='{$row['tgl_lahir']}' data-alamat='{$row['alamat']}' data-ortu='{$row['ortu']}'>
-                                Edit
-                            </button>
-                            <button class='btn btn-danger btn-sm' onclick='deleteSiswa({$row['id_siswa']})'>Hapus</button>
-                        </td>
-                      </tr>";
-                } ?>
+                $rows = $result->fetch_all(MYSQLI_ASSOC);
+
+                if (empty($rows)): ?>
+                    <tr>
+                        <td colspan="7" class="text-center">Tidak ada data untuk ditampilkan.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($rows as $row): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($numb++); ?></td>
+                            <td><?php echo htmlspecialchars($row['nisn']); ?></td>
+                            <td><?php echo htmlspecialchars($row['nama']); ?></td>
+                            <td><?php echo htmlspecialchars($row['tgl_lahir']); ?></td>
+                            <td><?php echo htmlspecialchars($row['alamat']); ?></td>
+                            <td><?php echo htmlspecialchars($row['ortu']); ?></td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"
+                                    data-id="<?php echo htmlspecialchars($row['id_siswa']); ?>"
+                                    data-nisn="<?php echo htmlspecialchars($row['nisn']); ?>"
+                                    data-nama="<?php echo htmlspecialchars($row['nama']); ?>"
+                                    data-tgl_lahir="<?php echo htmlspecialchars($row['tgl_lahir']); ?>"
+                                    data-alamat="<?php echo htmlspecialchars($row['alamat']); ?>"
+                                    data-ortu="<?php echo htmlspecialchars($row['ortu']); ?>">
+                                    Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm"
+                                    onclick="deleteSiswa(<?php echo htmlspecialchars($row['id_siswa']); ?>)">
+                                    Hapus
+                                </button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>

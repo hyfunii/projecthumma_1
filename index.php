@@ -106,7 +106,8 @@
                         <div class="card shadow">
                             <div class="card-body">
                                 <h5 class="card-title">Jalur Afirmasi</h5>
-                                <p class="card-text">Jalur untuk calon siswa dari keluarga kurang mampu atau berkebutuhan khusus.</p>
+                                <p class="card-text">Jalur untuk calon siswa dari keluarga kurang mampu atau
+                                    berkebutuhan khusus.</p>
                                 <a href="pages/j_afirmasi.php" class="btn btn-primary">Daftar</a>
                             </div>
                         </div>
