@@ -1,2 +1,2 @@
 <?php
-$db = mysqli_connect ("localhost", "root", "", "ppdb");
+$db = mysqli_connect("localhost", "root", "", "ppdb");

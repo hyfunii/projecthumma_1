@@ -6,7 +6,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nisn = $_POST['nisn'];
     $pilihan = $_POST['pilihan'];
 
-    // Ensure file was uploaded
     if (!isset($_FILES["doc"]) || $_FILES["doc"]["error"] != UPLOAD_ERR_OK) {
         echo "<script>
             alert('No file uploaded or upload error.');
@@ -15,10 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Handle file upload
     $target_dir = "../afirmasidoc/";
-    
-    // Ensure the directory exists
+
     if (!is_dir($target_dir) && !mkdir($target_dir, 0777, true)) {
         echo "<script>
             alert('Failed to create upload directory.');
@@ -31,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-    // Check if file is an actual image
+
     $check = getimagesize($_FILES["doc"]["tmp_name"]);
     if ($check === false) {
         echo "<script>
@@ -41,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uploadOk = 0;
     }
 
-    // Check file size (5MB maximum)
     if ($_FILES["doc"]["size"] > 5000000) {
         echo "<script>
             alert('Sorry, your file is too large.');
@@ -50,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uploadOk = 0;
     }
 
-    // Allow certain file formats
     if (!in_array($imageFileType, ['jpg', 'jpeg', 'png', 'gif'])) {
         echo "<script>
             alert('Sorry, only JPG, JPEG, PNG & GIF files are allowed.');
@@ -59,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uploadOk = 0;
     }
 
-    // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
         echo "<script>
             alert('Sorry, your file was not uploaded.');
@@ -92,12 +86,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     window.location.href = '../index.php';
                 </script>";
             } else {
-                // Insert data into j_afirmasi
+
                 $stmt = $db->prepare("INSERT INTO j_afirmasi (nisn, doc, pilihan) VALUES (?, ?, ?)");
                 $stmt->bind_param("sss", $nisn, $doc, $pilihan);
 
                 if ($stmt->execute()) {
-                    // Add to pendaftaran table
+
                     $stmt = $db->prepare("INSERT INTO pendaftaran (nisn) VALUES (?)");
                     $stmt->bind_param("s", $nisn);
                     $stmt->execute();
@@ -126,7 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db->close();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

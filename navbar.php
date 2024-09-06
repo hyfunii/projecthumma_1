@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <nav class="navbar bg-primary navbar-expand-lg bg-body-tertiary fixed-top bg-body-tertiary" data-bs-theme="dark" >
+    <nav class="navbar bg-primary navbar-expand-lg bg-body-tertiary fixed-top bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">PPDB</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -35,7 +35,8 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/project_1Humma/pages/j_afirmasi.php">Afirmasi</a></li>
                             <li><a class="dropdown-item" href="/project_1Humma/pages/j_zonasi.php">Zonasi</a></li>
-                            <li><a class="dropdown-item" href="/project_1Humma/pages/j_nilai.php">Nilai Akademik</a></li>
+                            <li><a class="dropdown-item" href="/project_1Humma/pages/j_nilai.php">Nilai Akademik</a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item">

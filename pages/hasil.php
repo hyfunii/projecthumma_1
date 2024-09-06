@@ -1,33 +1,30 @@
 <?php
 include '../db/debeh.php';
 
-// Handle individual record deletion
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['nisn'])) {
     $nisn = $_GET['nisn'];
     $stmt = $db->prepare("DELETE FROM hasil WHERE nisn = ?");
     $stmt->bind_param("s", $nisn);
     $result = $stmt->execute();
     if ($result) {
-        header('Location: ' . $_SERVER['PHP_SELF']); // Redirect to the same page
+        header('Location: ' . $_SERVER['PHP_SELF']);
         exit();
     } else {
         die('Error: ' . $db->error);
     }
 }
 
-// Handle delete all
 if (isset($_POST['delete_all'])) {
     $stmt = $db->prepare("DELETE FROM hasil");
     $result = $stmt->execute();
     if ($result) {
-        header('Location: ' . $_SERVER['PHP_SELF']); // Redirect to the same page
+        header('Location: ' . $_SERVER['PHP_SELF']);
         exit();
     } else {
         die('Error: ' . $db->error);
     }
 }
 
-// Fetch data for display
 $query = "
     SELECT 
         h.nisn, 
@@ -99,7 +96,7 @@ $db->close();
                         <td colspan="6" class="text-center">Tidak ada data untuk ditampilkan.</td>
                     </tr>
                 <?php else: ?>
-                    <?php $no = 1; // Nomor urut ?>
+                    <?php $no = 1; ?>
                     <?php foreach ($rows as $row): ?>
                         <tr>
                             <td><?php echo $no++; ?></td>
@@ -108,7 +105,9 @@ $db->close();
                             <td><?php echo htmlspecialchars($row['jurusan']); ?></td>
                             <td><?php echo htmlspecialchars($row['ket']); ?></td>
                             <td>
-                                <a href="?action=delete&nisn=<?php echo htmlspecialchars($row['nisn']); ?>" class="btn btn-danger btn-delete" onclick="return confirm('Are you sure you want to delete this record?')">Delete</a>
+                                <a href="?action=delete&nisn=<?php echo htmlspecialchars($row['nisn']); ?>"
+                                    class="btn btn-danger btn-delete"
+                                    onclick="return confirm('Are you sure you want to delete this record?')">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $sql = "INSERT INTO siswa (nisn, nama, tgl_lahir, alamat, ortu) VALUES ('$nisn', '$nama', '$tgl_lahir', '$alamat', '$ortu')";
         $db->query($sql);
-        
+
         header('Location: siswa.php');
         exit;
     } elseif ($action == 'edit') {
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $sql = "UPDATE siswa SET nama='$nama', tgl_lahir='$tgl_lahir', alamat='$alamat', ortu='$ortu' WHERE id_siswa='$id_siswa'";
         $db->query($sql);
-        
+
         header('Location: siswa.php');
         exit;
     } elseif ($action == 'delete') {
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $sql = "DELETE FROM siswa WHERE id_siswa='$id_siswa'";
         $db->query($sql);
-        
+
         header('Location: siswa.php');
         exit;
     }
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Data Siswa</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .container{
+        .container {
             padding-top: 2rem;
         }
     </style>
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container mt-5">
         <div class="d-flex justify-content-between">
             <h2>DATA SISWA</h2>
-        <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addModal">Tambah Siswa</button>
+            <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addModal">Tambah Siswa</button>
         </div>
         <table class="table table-striped table-bordered">
             <thead>

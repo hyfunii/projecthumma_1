@@ -63,7 +63,6 @@ $query = "
 $result = $db->query($query);
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -156,7 +155,6 @@ $result = $db->query($query);
         </div>
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
@@ -166,7 +164,6 @@ $result = $db->query($query);
             const currentSort = urlParams.get('sort');
             const currentDir = urlParams.get('dir') || 'asc';
 
-            
             document.querySelectorAll('th[data-sort]').forEach(th => {
                 const sortKey = th.getAttribute('data-sort');
                 th.classList.toggle(currentDir, sortKey === currentSort);
@@ -178,7 +175,6 @@ $result = $db->query($query);
                 });
             });
 
-            
             const detailModal = document.getElementById('detailModal');
             detailModal.addEventListener('show.bs.modal', event => {
                 const nisn = event.relatedTarget.getAttribute('data-id');
@@ -212,7 +208,6 @@ $result = $db->query($query);
                     .catch(error => console.error('Error:', error));
             });
 
-            
             document.addEventListener('click', event => {
                 if (event.target.id === 'fullscreenBtn') {
                     const imgUrl = event.target.getAttribute('data-img-url');
@@ -223,7 +218,7 @@ $result = $db->query($query);
                 if (event.target.classList.contains('btn-action')) {
                     const action = event.target.getAttribute('data-action');
                     const nisn = event.target.getAttribute('data-id');
-                    console.log(`Sending request: action=${action}, nisn=${nisn}`); 
+                    console.log(`Sending request: action=${action}, nisn=${nisn}`);
                     fetch(`../function/handle_action.php?action=${action}&nisn=${nisn}`, {
                         method: 'GET'
                     })
@@ -231,7 +226,7 @@ $result = $db->query($query);
                         .then(data => {
                             if (data.success) {
                                 alert('Data berhasil diproses.');
-                                window.location.reload(); 
+                                window.location.reload();
                             } else {
                                 alert(`Terjadi kesalahan: ${data.error}`);
                             }
@@ -240,12 +235,11 @@ $result = $db->query($query);
                 }
             });
 
-            
             document.querySelectorAll('.btn-lolos, .btn-tolak').forEach(button => {
                 button.addEventListener('click', () => {
                     const nisn = button.getAttribute('data-id');
                     const action = button.classList.contains('btn-lolos') ? 'lolos' : 'tolak';
-                    console.log(`Sending request: action=${action}, nisn=${nisn}`); 
+                    console.log(`Sending request: action=${action}, nisn=${nisn}`);
                     fetch(`../function/handle_action.php?action=${action}&nisn=${nisn}`, {
                         method: 'GET'
                     })
@@ -253,7 +247,7 @@ $result = $db->query($query);
                         .then(data => {
                             if (data.success) {
                                 alert('Data berhasil diproses.');
-                                window.location.reload(); 
+                                window.location.reload();
                             } else {
                                 alert(`Terjadi kesalahan: ${data.error}`);
                             }
@@ -263,8 +257,6 @@ $result = $db->query($query);
             });
         });
     </script>
-
-
 </body>
 
 </html>

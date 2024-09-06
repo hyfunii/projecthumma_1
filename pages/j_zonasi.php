@@ -33,12 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Insert data into j_zonasi
+
     $stmt = $db->prepare("INSERT INTO j_zonasi (nisn, jarak, pilihan) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $nisn, $jarak, $pilihan);
 
     if ($stmt->execute()) {
-        // Add to pendaftaran table
+
         $stmt = $db->prepare("INSERT INTO pendaftaran (nisn) VALUES (?)");
         $stmt->bind_param("s", $nisn);
         $stmt->execute();
@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             var latlng2 = L.latLng(location);
             var distance = latlng1.distanceTo(latlng2);
 
-            document.getElementById('jarak').value = (distance / 1000).toFixed(2); // in kilometers
+            document.getElementById('jarak').value = (distance / 1000).toFixed(2);
         }
 
         document.getElementById('nisn').addEventListener('input', function () {
