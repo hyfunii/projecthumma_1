@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'KKBT': 82.00
             };
             if (nilai_rata < kriteria[pilihan]) {
-                document.getElementById('criteria-warning').textContent = 'Anda tidak memiliki kriteria yang cukup untuk masuk ke jurusan ini!';
+                document.getElementById('criteria-warning').textContent = `Anda tidak memiliki kriteria yang cukup untuk masuk ke jurusan ini! Nilai minimum yang dibutuhkan adalah ${kriteria[pilihan]}.`;
                 toggleSubmitButton(false);
             } else {
                 document.getElementById('criteria-warning').textContent = '';

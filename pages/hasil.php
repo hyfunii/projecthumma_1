@@ -74,7 +74,8 @@ $db->close();
             <h2>Hasil Pendaftaran</h2>
             <div>
                 <form method="POST" style="display:inline;">
-                    <button type="submit" name="delete_all" class="btn btn-danger mb-3">Delete All</button>
+                    <button type="submit" name="delete_all" class="btn btn-danger mb-3"
+                        onclick="return confirm('Are you sure you want to delete this record?')">Hapus Semua</button>
                 </form>
             </div>
         </div>
@@ -106,7 +107,7 @@ $db->close();
                             <td>
                                 <a href="?action=delete&nisn=<?php echo htmlspecialchars($row['nisn']); ?>"
                                     class="btn btn-danger btn-delete"
-                                    onclick="return confirm('Are you sure you want to delete this record?')">Delete</a>
+                                    onclick="return confirm('Are you sure you want to delete this record?')">Hapus</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -1,7 +1,6 @@
 <?php
 include '../db/debeh.php';
 
-// Handle delete request
 if (isset($_GET['delete'])) {
     $nisn = $_GET['delete'];
     if ($nisn) {
@@ -15,7 +14,6 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// Handle edit request
 if (isset($_POST['update'])) {
     $nisn = $_POST['nisn'];
     $nilai_rata = $_POST['nilai_rata'];
@@ -31,7 +29,6 @@ if (isset($_POST['update'])) {
     }
 }
 
-// Handle add request
 if (isset($_POST['add'])) {
     $nisn = $_POST['nisn'];
     $nilai_rata = $_POST['nilai_rata'];
@@ -118,7 +115,8 @@ $db->close();
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Data Nilai</h2>
-            <button class="btn btn-primary btn-add btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">Tambah Nilai Baru</button>
+            <button class="btn btn-primary btn-add btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">Tambah
+                Nilai Baru</button>
         </div>
         <table class="table table-striped table-bordered">
             <thead class="table-light">
@@ -148,7 +146,7 @@ $db->close();
                                     class="btn btn-warning btn-sm btn-edit">Edit</a>
                                 <a href="?delete=<?php echo urlencode($data_show['nisn']); ?>"
                                     class="btn btn-danger btn-delete btn-sm"
-                                    onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');">Delete</a>
+                                    onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');">Hapus</a>
                             </td>
                         </tr>
 

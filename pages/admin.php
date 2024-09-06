@@ -210,7 +210,7 @@ while ($data_show = $result->fetch_assoc()) {
                     <p><strong>Pilihan:</strong> ${data.Pilihan}</p>
                     ${docContent}
                     ${data.Rata_Rata_Nilai ? `<p><strong>Rata Rata Nilai:</strong> ${data.Rata_Rata_Nilai}</p>` : ''}
-                    ${data.Jarak_Kesekolah ? `<p><strong>Jarak Kesekolah:</strong> ${data.Jarak_Kesekolah}</p>` : ''}
+                    ${data.Jarak_Kesekolah ? `<p><strong>Jarak Kesekolah:</strong> ${data.Jarak_Kesekolah} Km</p>` : ''}
                     <br>
                     <button class="btn btn-success btn-action" data-action="lolos" data-id="${data.nisn}">Lolos</button>
                     <button class="btn btn-danger btn-action" data-action="tolak" data-id="${data.nisn}">Tolak</button>
