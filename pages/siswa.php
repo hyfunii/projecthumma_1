@@ -1,6 +1,10 @@
 <?php
 include '../db/debeh.php';
 
+$status = '';
+$toastType = '';
+$toastMessage = '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $action = $_POST['action'] ?? '';
 
@@ -11,10 +15,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $alamat = $_POST['alamat'];
         $ortu = $_POST['ortu'];
 
-        $sql = "INSERT INTO siswa (nisn, nama, tgl_lahir, alamat, ortu) VALUES ('$nisn', '$nama', '$tgl_lahir', '$alamat', '$ortu')";
-        $db->query($sql);
+        $check_sql = "SELECT COUNT(*) AS count FROM siswa WHERE nisn=?";
+        $stmt = $db->prepare($check_sql);
+        $stmt->bind_param('s', $nisn);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        $stmt->close();
 
-        header('Location: siswa.php');
+        if ($count > 0) {
+            $status = 'error';
+        } else {
+            $sql = "INSERT INTO siswa (nisn, nama, tgl_lahir, alamat, ortu) VALUES (?, ?, ?, ?, ?)";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param('sssss', $nisn, $nama, $tgl_lahir, $alamat, $ortu);
+            $stmt->execute();
+            $stmt->close();
+            $status = 'success';
+        }
+        header('Location: siswa.php?status=' . $status);
         exit;
     } elseif ($action == 'edit') {
         $id_siswa = $_POST['id_siswa'];
@@ -23,18 +42,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $alamat = $_POST['alamat'];
         $ortu = $_POST['ortu'];
 
-        $sql = "UPDATE siswa SET nama='$nama', tgl_lahir='$tgl_lahir', alamat='$alamat', ortu='$ortu' WHERE id_siswa='$id_siswa'";
-        $db->query($sql);
+        $sql = "UPDATE siswa SET nama=?, tgl_lahir=?, alamat=?, ortu=? WHERE id_siswa=?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param('ssssi', $nama, $tgl_lahir, $alamat, $ortu, $id_siswa);
+        $stmt->execute();
+        $stmt->close();
 
-        header('Location: siswa.php');
+        $status = 'success';
+        header('Location: siswa.php?status=' . $status);
         exit;
     } elseif ($action == 'delete') {
         $id_siswa = $_POST['id_siswa'];
 
-        $sql = "DELETE FROM siswa WHERE id_siswa='$id_siswa'";
-        $db->query($sql);
+        $sql = "DELETE FROM siswa WHERE id_siswa=?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param('i', $id_siswa);
+        $stmt->execute();
+        $stmt->close();
 
-        header('Location: siswa.php');
+        $status = 'success';
+        header('Location: siswa.php?status=' . $status);
         exit;
     }
 }
@@ -74,7 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Data Siswa</h2>
-            <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addModal">Tambah Siswa</button>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">Tambah
+                Siswa</button>
         </div>
         <table class="table table-striped table-bordered">
             <thead class="table-light">
@@ -108,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <td><?php echo htmlspecialchars($row['alamat']); ?></td>
                             <td><?php echo htmlspecialchars($row['ortu']); ?></td>
                             <td>
-                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"
+                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal"
                                     data-id="<?php echo htmlspecialchars($row['id_siswa']); ?>"
                                     data-nisn="<?php echo htmlspecialchars($row['nisn']); ?>"
                                     data-nama="<?php echo htmlspecialchars($row['nama']); ?>"
@@ -129,15 +157,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </table>
     </div>
 
-    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addModalLabel">Tambah Siswa</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="post">
                     <div class="modal-body">
@@ -163,23 +188,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" name="action" value="add">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="add">Simpan Data</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editModalLabel">Edit Siswa</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="post">
                     <div class="modal-body">
@@ -206,20 +228,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" name="action" value="edit">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary" name="action" value="edit">Simpan
+                            Perubahan</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast-success" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Sukses</strong>
+                <small>Baru saja</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Operasi berhasil!
+            </div>
+        </div>
+        <div id="toast-error" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Error</strong>
+                <small>Baru saja</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Operasi gagal, coba lagi!
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            <?php if (isset($_GET['status']) && $_GET['status'] == 'success'): ?>
+                showToast('success');
+            <?php elseif (isset($_GET['status']) && $_GET['status'] == 'error'): ?>
+                showToast('error');
+            <?php endif; ?>
+        });
+
+        function showToast(type) {
+            var toast = document.getElementById('toast-' + type);
+            var toastInstance = new bootstrap.Toast(toast);
+            toastInstance.show();
+        }
+
         $('#editModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var modal = $(this);

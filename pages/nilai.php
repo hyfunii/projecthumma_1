@@ -1,6 +1,10 @@
 <?php
 include '../db/debeh.php';
 
+$toastMessage = '';
+$toastType = '';
+$status = '';
+
 if (isset($_GET['delete'])) {
     $nisn = $_GET['delete'];
     if ($nisn) {
@@ -9,7 +13,10 @@ if (isset($_GET['delete'])) {
         $stmt->bind_param('s', $nisn);
         $stmt->execute();
         $stmt->close();
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        $toastMessage = 'Data berhasil dihapus.';
+        $toastType = 'success';
+        $status = 'success';
+        header('Location: nilai.php?status=' . $status);
         exit();
     }
 }
@@ -24,7 +31,10 @@ if (isset($_POST['update'])) {
         $stmt->bind_param('ds', $nilai_rata, $nisn);
         $stmt->execute();
         $stmt->close();
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        $toastMessage = 'Data berhasil diperbarui.';
+        $toastType = 'success';
+        $status = 'success';
+        header('Location: nilai.php?status=' . $status);
         exit();
     }
 }
@@ -34,12 +44,29 @@ if (isset($_POST['add'])) {
     $nilai_rata = $_POST['nilai_rata'];
 
     if ($nisn && $nilai_rata) {
-        $insert_query = "INSERT INTO nilai (nisn, nilai_rata) VALUES (?, ?)";
-        $stmt = $db->prepare($insert_query);
-        $stmt->bind_param('sd', $nisn, $nilai_rata);
+        $check_query = "SELECT COUNT(*) FROM nilai WHERE nisn = ?";
+        $stmt = $db->prepare($check_query);
+        $stmt->bind_param('s', $nisn);
         $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
         $stmt->close();
-        header('Location: ' . $_SERVER['PHP_SELF']);
+
+        if ($count > 0) {
+            $toastMessage = 'NISN sudah terdaftar.';
+            $toastType = 'danger';
+            $status = 'error';
+        } else {
+            $insert_query = "INSERT INTO nilai (nisn, nilai_rata) VALUES (?, ?)";
+            $stmt = $db->prepare($insert_query);
+            $stmt->bind_param('sd', $nisn, $nilai_rata);
+            $stmt->execute();
+            $stmt->close();
+            $toastMessage = 'Data berhasil ditambahkan.';
+            $toastType = 'success';
+            $status = 'success';
+        }
+        header('Location: nilai.php?status=' . $status);
         exit();
     }
 }
@@ -65,6 +92,9 @@ while ($data_show = $result->fetch_assoc()) {
 }
 
 $db->close();
+
+$toastMessage = $_GET['toast'] ?? '';
+$toastType = $_GET['type'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -100,12 +130,6 @@ $db->close();
 
         .container {
             padding-top: 2rem;
-        }
-
-        .btn-edit,
-        .btn-delete,
-        .btn-add {
-            margin: 0 0.5rem;
         }
     </style>
 </head>
@@ -168,14 +192,15 @@ $db->close();
                                                 value="<?php echo htmlspecialchars($data_show['nisn']); ?>">
                                             <div class="mb-3">
                                                 <label for="nilai_rata" class="form-label">Nilai Rata-Rata</label>
-                                                <input type="number" class="form-control" id="nilai_rata" name="nilai_rata"
+                                                <input type="number" max="100" class="form-control" id="nilai_rata"
+                                                    name="nilai_rata"
                                                     value="<?php echo htmlspecialchars($data_show['nilai_rata']); ?>" required>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary btn-sm"
-                                                data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" name="update" class="btn btn-primary btn-sm">Update</button>
+                                                data-bs-dismiss="modal">Tutup</button>
+                                            <button type="submit" name="update" class="btn btn-primary btn-sm">Perbarui</button>
                                         </div>
                                     </form>
                                 </div>
@@ -192,7 +217,7 @@ $db->close();
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Add New Nilai</h5>
+                    <h5 class="modal-title" id="addModalLabel">Tambah Nilai Baru</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="post">
@@ -203,14 +228,38 @@ $db->close();
                         </div>
                         <div class="mb-3">
                             <label for="nilai_rata" class="form-label">Nilai Rata-Rata</label>
-                            <input type="number" class="form-control" id="nilai_rata" name="nilai_rata" required>
+                            <input type="number" max="100" class="form-control" id="nilai_rata" name="nilai_rata"
+                                required>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" name="add" class="btn btn-primary btn-sm">Add</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" name="add" class="btn btn-primary btn-sm">Tambahkan</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast-success" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Sukses</strong>
+                <small>Baru saja</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Operasi berhasil!
+            </div>
+        </div>
+        <div id="toast-error" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Error</strong>
+                <small>Baru saja</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Operasi gagal, coba lagi!
             </div>
         </div>
     </div>
@@ -219,8 +268,14 @@ $db->close();
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', function () {
             const urlParams = new URLSearchParams(window.location.search);
+            const toastType = urlParams.get('type');
+            <?php if (isset($_GET['status']) && $_GET['status'] == 'success'): ?>
+                showToast('success');
+            <?php elseif (isset($_GET['status']) && $_GET['status'] == 'error'): ?>
+                showToast('error');
+            <?php endif; ?>
             const currentSort = urlParams.get('sort');
             const currentDir = urlParams.get('dir') || 'asc';
 
@@ -235,6 +290,11 @@ $db->close();
                 });
             });
         });
+        function showToast(type) {
+            var toast = document.getElementById('toast-' + type);
+            var toastInstance = new bootstrap.Toast(toast);
+            toastInstance.show();
+        }
     </script>
 </body>
 
