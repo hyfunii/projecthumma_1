@@ -44,7 +44,7 @@ if (isset($_POST['add'])) {
     $nilai_rata = $_POST['nilai_rata'];
 
     if ($nisn && $nilai_rata) {
-        $check_query = "SELECT COUNT(*) FROM nilai WHERE nisn = ?";
+        $check_query = "SELECT COUNT(*) FROM siswa WHERE nisn = ?";
         $stmt = $db->prepare($check_query);
         $stmt->bind_param('s', $nisn);
         $stmt->execute();
@@ -52,19 +52,33 @@ if (isset($_POST['add'])) {
         $stmt->fetch();
         $stmt->close();
 
-        if ($count > 0) {
-            $toastMessage = 'NISN sudah terdaftar.';
+        if ($count == 0) {
+            $toastMessage = 'NISN tidak terdaftar di tabel siswa.';
             $toastType = 'danger';
             $status = 'error';
         } else {
-            $insert_query = "INSERT INTO nilai (nisn, nilai_rata) VALUES (?, ?)";
-            $stmt = $db->prepare($insert_query);
-            $stmt->bind_param('sd', $nisn, $nilai_rata);
+            $check_query = "SELECT COUNT(*) FROM nilai WHERE nisn = ?";
+            $stmt = $db->prepare($check_query);
+            $stmt->bind_param('s', $nisn);
             $stmt->execute();
+            $stmt->bind_result($count);
+            $stmt->fetch();
             $stmt->close();
-            $toastMessage = 'Data berhasil ditambahkan.';
-            $toastType = 'success';
-            $status = 'success';
+
+            if ($count > 0) {
+                $toastMessage = 'NISN sudah terdaftar di tabel nilai.';
+                $toastType = 'danger';
+                $status = 'error';
+            } else {
+                $insert_query = "INSERT INTO nilai (nisn, nilai_rata) VALUES (?, ?)";
+                $stmt = $db->prepare($insert_query);
+                $stmt->bind_param('sd', $nisn, $nilai_rata);
+                $stmt->execute();
+                $stmt->close();
+                $toastMessage = 'Data berhasil ditambahkan.';
+                $toastType = 'success';
+                $status = 'success';
+            }
         }
         header('Location: nilai.php?status=' . $status);
         exit();
@@ -95,6 +109,7 @@ $db->close();
 
 $toastMessage = $_GET['toast'] ?? '';
 $toastType = $_GET['type'] ?? '';
+
 ?>
 
 <!DOCTYPE html>
@@ -149,7 +164,6 @@ $toastType = $_GET['type'] ?? '';
                     <th class="sortable" data-sort="n.nisn">NISN</th>
                     <th class="sortable" data-sort="s.nama">Nama</th>
                     <th class="sortable" data-sort="n.nilai_rata">Nilai Rata-Rata</th>
-                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -242,15 +256,14 @@ $toastType = $_GET['type'] ?? '';
     </div>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast-message" style="display: none;"><?php echo $toastMessage; ?></div>
         <div id="toast-success" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
                 <strong class="me-auto">Sukses</strong>
                 <small>Baru saja</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="toast-body">
-                Operasi berhasil!
-            </div>
+            <div class="toast-body" id="toast-body-success"></div>
         </div>
         <div id="toast-error" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
@@ -258,9 +271,7 @@ $toastType = $_GET['type'] ?? '';
                 <small>Baru saja</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="toast-body">
-                Operasi gagal, coba lagi!
-            </div>
+            <div class="toast-body" id="toast-body-error"></div>
         </div>
     </div>
 
@@ -276,25 +287,21 @@ $toastType = $_GET['type'] ?? '';
             <?php elseif (isset($_GET['status']) && $_GET['status'] == 'error'): ?>
                 showToast('error');
             <?php endif; ?>
-            const currentSort = urlParams.get('sort');
-            const currentDir = urlParams.get('dir') || 'asc';
 
-            document.querySelectorAll('th[data-sort]').forEach(th => {
-                const sortKey = th.getAttribute('data-sort');
-                th.classList.toggle(currentDir, sortKey === currentSort);
-                th.addEventListener('click', () => {
-                    const newDir = (currentSort === sortKey && currentDir === 'asc') ? 'desc' : 'asc';
-                    urlParams.set('sort', sortKey);
-                    urlParams.set('dir', newDir);
-                    window.location.search = urlParams.toString();
-                });
-            });
+            function showToast(type) {
+                var toastMessage = document.getElementById("toast-message").innerHTML;
+                var toast = document.getElementById('toast-' + type);
+                var toastBody = toast.querySelector(".toast-body");
+                if (type == 'success') {
+                    toastBody = document.getElementById("toast-body-success");
+                } else {
+                    toastBody = document.getElementById("toast-body-error");
+                }
+                toastBody.innerHTML = toastMessage;
+                var toastInstance = new bootstrap.Toast(toast);
+                toastInstance.show();
+            }
         });
-        function showToast(type) {
-            var toast = document.getElementById('toast-' + type);
-            var toastInstance = new bootstrap.Toast(toast);
-            toastInstance.show();
-        }
     </script>
 </body>
 
