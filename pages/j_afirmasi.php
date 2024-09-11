@@ -161,8 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="KKBT">KKBT</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <a href="../index.php" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Konfirmasi</button>
+            <a href="../index.php" class="btn btn-secondary">Batal</a>
         </form>
     </div>
 

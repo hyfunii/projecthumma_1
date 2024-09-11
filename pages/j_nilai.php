@@ -124,8 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
                 <small id="criteria-warning" class="form-text warning"></small>
             </div>
-            <button type="submit" class="btn btn-primary" id="submit-btn">Submit</button>
-            <a href="../index.php" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary" id="submit-btn">Konfirmasi</button>
+            <a href="../index.php" class="btn btn-secondary">Batal</a>
         </form>
     </div>
 
