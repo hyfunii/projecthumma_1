@@ -253,7 +253,7 @@ $toastType = $_GET['type'] ?? '';
     </div>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="toast-success" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="toast-success" class="toast hide align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
                 <strong class="me-auto">Sukses</strong>
                 <small>Baru saja</small>
@@ -263,14 +263,14 @@ $toastType = $_GET['type'] ?? '';
                 Operasi berhasil!
             </div>
         </div>
-        <div id="toast-error" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="toast-error" class="toast hide align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
                 <strong class="me-auto">Error</strong>
                 <small>Baru saja</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Operasi gagal, coba lagi!
+                Operasi gagal, NISN sudah terdaftar!
             </div>
         </div>
     </div>
